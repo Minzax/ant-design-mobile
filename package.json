@@ -6,7 +6,6 @@
     "build": "gulp",
     "build-doc": "dumi build",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "postinstall": "husky install",
     "test": "jest --maxWorkers=50%",
     "test:coverage": "jest --maxWorkers=50% --coverage",
     "publish": "npm publish ./lib --tag next"
