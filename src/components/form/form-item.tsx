@@ -109,7 +109,7 @@ const FormItemLayout: React.FC<FormItemLayoutProps> = props => {
       description={descriptionElement}
       className={classNames(classPrefix, className, {
         [`${classPrefix}-hidden`]: hidden,
-        [`${classPrefix}-error`]: feedback,
+        [`${classPrefix}-error`]: feedback !== undefined,
       })}
       disabled={disabled}
       onClick={props.onClick}
