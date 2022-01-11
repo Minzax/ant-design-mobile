@@ -18,11 +18,13 @@ export type StepperProps = Pick<InputProps, 'onFocus' | 'onBlur'> & {
   step?: number
   digits?: number
   disabled?: boolean
+  inputReadOnly?: boolean
   onChange?: (value: number) => void
 } & NativeProps<
     | '--height'
     | '--input-width'
     | '--input-font-size'
+    | '--input-background-color'
     | '--border-radius'
     | '--border'
     | '--border-inner'
@@ -42,7 +44,7 @@ const defaultProps = {
 
 export const Stepper: FC<StepperProps> = p => {
   const props = mergeProps(defaultProps, p)
-  const { disabled, step, max, min } = props
+  const { disabled, step, max, min, inputReadOnly } = props
 
   const [value, setValue] = usePropsValue(props)
   const [inputValue, setInputValue] = useState(() => value.toString())
@@ -115,22 +117,25 @@ export const Stepper: FC<StepperProps> = p => {
       >
         <MinusOutline />
       </Button>
-      <Input
-        className={`${classPrefix}-input`}
-        onFocus={e => {
-          setHasFocus(true)
-          props.onFocus?.(e)
-        }}
-        value={inputValue}
-        onChange={val => {
-          disabled || handleInputChange(val)
-        }}
-        disabled={disabled}
-        onBlur={e => {
-          setHasFocus(false)
-          props.onBlur?.(e)
-        }}
-      />
+      <div className={`${classPrefix}-middle`}>
+        <Input
+          className={`${classPrefix}-input`}
+          onFocus={e => {
+            setHasFocus(true)
+            props.onFocus?.(e)
+          }}
+          value={inputValue}
+          onChange={val => {
+            disabled || handleInputChange(val)
+          }}
+          disabled={disabled}
+          onBlur={e => {
+            setHasFocus(false)
+            props.onBlur?.(e)
+          }}
+          readOnly={inputReadOnly}
+        />
+      </div>
       <Button
         className={`${classPrefix}-plus`}
         onClick={handlePlus}

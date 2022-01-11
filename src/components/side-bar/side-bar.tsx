@@ -8,7 +8,7 @@ import { usePropsValue } from '../../utils/use-props-value'
 const classPrefix = `adm-side-bar`
 
 export type SideBarItemProps = {
-  title?: string
+  title?: ReactNode
   disabled?: boolean
   badge?: ReactNode
 } & NativeProps
@@ -21,7 +21,9 @@ export type SideBarProps = {
   activeKey?: string | null
   defaultActiveKey?: string | null
   onChange?: (key: string) => void
-} & NativeProps<'--width' | '--height' | '--item-border-radius'>
+} & NativeProps<
+  '--width' | '--height' | '--item-border-radius' | '--background-color'
+>
 
 export const SideBar: FC<SideBarProps> = props => {
   let firstActiveKey: string | null = null
@@ -66,6 +68,7 @@ export const SideBar: FC<SideBarProps> = props => {
           >
             <Badge content={item.props.badge}>
               <div className={`${classPrefix}-item-title`}>
+                {active && <div className={`${classPrefix}-item-highlight`} />}
                 {item.props.title}
               </div>
             </Badge>

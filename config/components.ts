@@ -70,6 +70,7 @@ export const components = {
   other: ['/components/config-provider'],
   experimental: [
     '/components/what-is-experimental',
+    '/components/calendar',
     '/components/dropdown',
     '/components/ellipsis',
     '/components/floating-bubble',
@@ -77,6 +78,7 @@ export const components = {
     '/components/number-keyboard',
     '/components/passcode-input',
     '/components/safe-area',
+    '/components/skeleton',
     '/components/tree-select',
     '/components/virtual-input',
     // '/components/scroll-mask',
