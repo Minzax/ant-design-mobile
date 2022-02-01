@@ -14,6 +14,8 @@ import { nearest } from '../../utils/nearest'
 export type FloatingPanelProps = {
   anchors: number[]
   children: ReactNode
+  headerChildren?: ReactNode
+  onIndexDragEnd?: (index: number) => void
 } & NativeProps<'--border-radius' | '--z-index'>
 
 export type FloatingPanelRef = {
@@ -27,7 +29,7 @@ export type FloatingPanelRef = {
 
 export const FloatingPanel = forwardRef<FloatingPanelRef, FloatingPanelProps>(
   (props, ref) => {
-    const { anchors } = props
+    const { anchors, headerChildren, onIndexDragEnd } = props
     const maxHeight = anchors[anchors.length - 1] ?? window.innerHeight
 
     const possibles = anchors.map(x => -x)
@@ -81,6 +83,7 @@ export const FloatingPanel = forwardRef<FloatingPanelRef, FloatingPanelProps>(
           pullingRef.current = false
           setPulling(false)
           nextY = nearest(possibles, offsetY)
+          onIndexDragEnd?.(possibles.indexOf(nextY))
         }
         api.start({
           y: nextY,
@@ -132,7 +135,7 @@ export const FloatingPanel = forwardRef<FloatingPanelRef, FloatingPanelProps>(
           }}
         />
         <div className='adm-floating-panel-header' ref={headerRef}>
-          <div className='adm-floating-panel-bar' />
+          {headerChildren || <div className='adm-floating-panel-bar' />}
         </div>
         <div className='adm-floating-panel-content' ref={contentRef}>
           {props.children}

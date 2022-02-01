@@ -28,7 +28,12 @@ export default () => {
   return (
     <>
       <DemoDescription></DemoDescription>
-      <FloatingPanel anchors={anchors}>
+      <FloatingPanel
+        anchors={anchors}
+        onIndexDragEnd={index => {
+          console.log(index)
+        }}
+      >
         <List>
           {data.map((item, index) => (
             <List.Item key={index}>{item}</List.Item>
