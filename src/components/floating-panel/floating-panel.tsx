@@ -15,7 +15,8 @@ export type FloatingPanelProps = {
   anchors: number[]
   children: ReactNode
   headerChildren?: ReactNode
-  onIndexDragEnd?: (index: number) => void
+  onIndexDragEndChange?: (index: number) => void
+  onHeightChange?: (height: number, animating: boolean) => void
 } & NativeProps<'--border-radius' | '--z-index'>
 
 export type FloatingPanelRef = {
@@ -29,7 +30,7 @@ export type FloatingPanelRef = {
 
 export const FloatingPanel = forwardRef<FloatingPanelRef, FloatingPanelProps>(
   (props, ref) => {
-    const { anchors, headerChildren, onIndexDragEnd } = props
+    const { anchors, headerChildren, onIndexDragEndChange } = props
     const maxHeight = anchors[anchors.length - 1] ?? window.innerHeight
 
     const possibles = anchors.map(x => -x)
@@ -48,6 +49,9 @@ export const FloatingPanel = forwardRef<FloatingPanelRef, FloatingPanelProps>(
     const [{ y }, api] = useSpring(() => ({
       y: bounds.bottom,
       config: { tension: 300 },
+      onChange: result => {
+        props.onHeightChange?.(result.value.y, y.isAnimating)
+      },
     }))
 
     useDrag(
@@ -83,7 +87,7 @@ export const FloatingPanel = forwardRef<FloatingPanelRef, FloatingPanelProps>(
           pullingRef.current = false
           setPulling(false)
           nextY = nearest(possibles, offsetY)
-          onIndexDragEnd?.(possibles.indexOf(nextY))
+          onIndexDragEndChange?.(possibles.indexOf(nextY))
         }
         api.start({
           y: nextY,

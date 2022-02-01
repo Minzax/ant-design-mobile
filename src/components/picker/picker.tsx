@@ -35,7 +35,9 @@ export type PickerProps = {
   PopupProps,
   'getContainer' | 'afterShow' | 'afterClose' | 'onClick' | 'stopPropagation'
 > &
-  NativeProps
+  NativeProps<
+    '--header-button-font-size' | '--title-font-size' | '--item-font-size'
+  >
 
 const defaultProps = {
   defaultValue: [],
@@ -118,6 +120,7 @@ export const Picker = memo<PickerProps>(p => {
 
   const popupElement = (
     <Popup
+      className={`${classPrefix}-popup`}
       visible={props.visible}
       position='bottom'
       onMaskClick={() => {

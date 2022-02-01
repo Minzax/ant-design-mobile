@@ -1,6 +1,5 @@
 import React from 'react'
 import { FloatingPanel, List } from 'antd-mobile'
-import { DemoDescription } from 'demos'
 
 const data = [
   'A',
@@ -27,13 +26,7 @@ const anchors = [100, window.innerHeight * 0.4, window.innerHeight * 0.8]
 export default () => {
   return (
     <>
-      <DemoDescription></DemoDescription>
-      <FloatingPanel
-        anchors={anchors}
-        onIndexDragEnd={index => {
-          console.log(index)
-        }}
-      >
+      <FloatingPanel anchors={anchors}>
         <List>
           {data.map((item, index) => (
             <List.Item key={index}>{item}</List.Item>

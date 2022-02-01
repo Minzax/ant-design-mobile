@@ -26,7 +26,7 @@ export type PickerViewProps = {
   value?: PickerValue[]
   defaultValue?: PickerValue[]
   onChange?: (value: PickerValue[], extend: PickerValueExtend) => void
-} & NativeProps<'--height'>
+} & NativeProps<'--height' | '--item-font-size'>
 
 const defaultProps = {
   defaultValue: [],
@@ -74,7 +74,7 @@ export const PickerView = memo<PickerViewProps>(p => {
   const columns = useColumns(props.columns, innerValue)
   const generateValueExtend = usePickerValueExtend(columns)
 
-  const handleSelect = useCallback((val: string, index: number) => {
+  const handleSelect = useCallback((val: PickerValue, index: number) => {
     setInnerValue(prev => {
       const next = [...prev]
       next[index] = val

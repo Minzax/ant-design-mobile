@@ -9,6 +9,7 @@ import { usePropsValue } from '../../utils/use-props-value'
 import { CloseCircleFill } from 'antd-mobile-icons'
 import { NativeProps, withNativeProps } from '../../utils/native-props'
 import { mergeProps } from '../../utils/with-default-props'
+import classNames from 'classnames'
 
 const classPrefix = `adm-input`
 
@@ -34,6 +35,8 @@ export type InputProps = Pick<
   | 'onKeyDown'
   | 'onKeyUp'
   | 'onClick'
+  | 'onCompositionStart'
+  | 'onCompositionEnd'
 > & {
   value?: string
   defaultValue?: string
@@ -54,11 +57,7 @@ export type InputProps = Pick<
     | 'search'
     | 'send'
 } & NativeProps<
-    | '--font-size'
-    | '--color'
-    | '--placeholder-color'
-    | '--disabled-color'
-    | '--text-align'
+    '--font-size' | '--color' | '--placeholder-color' | '--text-align'
   >
 
 const defaultProps = {
@@ -106,10 +105,15 @@ export const Input = forwardRef<InputRef, InputProps>((p, ref) => {
 
   return withNativeProps(
     props,
-    <div className={`${classPrefix}-wrapper`}>
+    <div
+      className={classNames(
+        `${classPrefix}`,
+        props.disabled && `${classPrefix}-disabled`
+      )}
+    >
       <input
         ref={nativeInputRef}
-        className={classPrefix}
+        className={`${classPrefix}-element`}
         value={value}
         onChange={e => {
           setValue(e.target.value)
@@ -133,13 +137,16 @@ export const Input = forwardRef<InputRef, InputProps>((p, ref) => {
         min={props.min}
         autoComplete={props.autoComplete}
         pattern={props.pattern}
+        inputMode={props.inputMode}
         type={props.type}
         autoCapitalize={props.autoCapitalize}
         autoCorrect={props.autoCorrect}
         onKeyDown={handleKeydown}
         onKeyUp={props.onKeyUp}
+        onCompositionStart={props.onCompositionStart}
+        onCompositionEnd={props.onCompositionEnd}
       />
-      {props.clearable && !!value && hasFocus && (
+      {props.clearable && !!value && (
         <div
           className={`${classPrefix}-clear`}
           onMouseDown={e => {
