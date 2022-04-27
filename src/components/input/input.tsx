@@ -142,7 +142,6 @@ export const Input = forwardRef<InputRef, InputProps>((p, ref) => {
           props.onBlur?.(e)
         }}
         id={props.id}
-        onClick={props.onClick}
         placeholder={props.placeholder}
         disabled={props.disabled}
         readOnly={props.readOnly}
