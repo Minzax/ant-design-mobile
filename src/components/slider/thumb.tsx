@@ -1,5 +1,6 @@
 import React, { FC, useRef, RefObject } from 'react'
 import { useDrag } from '@use-gesture/react'
+import { ThumbIcon } from './thumb-icon'
 
 const classPrefix = `adm-slider`
 
@@ -10,10 +11,11 @@ type ThumbProps = {
   disabled: boolean
   onDrag: (value: number, first: boolean, last: boolean) => void
   trackRef: RefObject<HTMLDivElement>
+  icon?: React.ReactNode
 }
 
 const Thumb: FC<ThumbProps> = props => {
-  const { value, min, max, disabled, onDrag } = props
+  const { value, min, max, disabled, onDrag, icon } = props
   const prevValue = useRef(value)
 
   const currentPosition = () => {
@@ -47,7 +49,9 @@ const Thumb: FC<ThumbProps> = props => {
       style={currentPosition()}
       {...bind()}
     >
-      <div className={`${classPrefix}-thumb`} />
+      <div className={`${classPrefix}-thumb`}>
+        {icon ? icon : <ThumbIcon className={`${classPrefix}-thumb-icon`} />}
+      </div>
     </div>
   )
 }

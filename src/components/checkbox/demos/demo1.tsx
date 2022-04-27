@@ -16,8 +16,13 @@ export default () => {
           >
             <Checkbox />
           </div>
-          <Checkbox>有描述的勾选框</Checkbox>
+          <Checkbox>有描述的复选框</Checkbox>
           <Checkbox defaultChecked>默认选中</Checkbox>
+        </Space>
+      </DemoBlock>
+
+      <DemoBlock title='状态'>
+        <Space direction='vertical'>
           <Checkbox defaultChecked disabled>
             禁用状态
           </Checkbox>
@@ -80,7 +85,7 @@ export default () => {
             '--gap': '6px',
           }}
         >
-          小号的勾选框
+          小号的复选框
         </Checkbox>
       </DemoBlock>
     </>

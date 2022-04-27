@@ -1,9 +1,10 @@
 # Button
 
 <code src="./demos/demo1.tsx"></code>
-<code src="./demos/demo2.tsx" debug></code>
 
-## Props
+<code src="./demos/demo2.tsx"></code>
+
+### Props
 
 | Name        | Description                                  | Type                                                               | Default     |
 | ----------- | -------------------------------------------- | ------------------------------------------------------------------ | ----------- |
@@ -18,7 +19,7 @@
 | type        | The `type` prop of native `button` element.  | `'submit' \| 'reset' \| 'button'`                                  | `'button'`  |
 | shape       | The shape of the button.                     | `'default' \| 'rounded' \| 'rectangular'`                          | `'default'` |
 
-## CSS Variables
+### CSS Variables
 
 | Name               | Description                     | Default                   | Global                          |
 | ------------------ | ------------------------------- | ------------------------- | ------------------------------- |
@@ -28,3 +29,9 @@
 | --border-width     | Border width of the button.     | `1px`                     | `--adm-button-border-width`     |
 | --border-style     | Border style of the button.     | `solid`                   | `--adm-button-border-style`     |
 | --border-color     | Border color of the button.     | `var(--adm-border-color)` | `--adm-button-border-color`     |
+
+### Ref
+
+| Name          | Description           | Type                          |
+| ------------- | --------------------- | ----------------------------- |
+| nativeElement | Native button element | `HtmlButtonElement` \| `null` |

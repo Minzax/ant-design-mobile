@@ -11,6 +11,10 @@ import { FormContext, NoStyleItemContext } from './context'
 import { toArray } from './utils'
 import List, { ListItemProps } from '../list'
 import type { FormLayout } from './index'
+import Popover from '../popover'
+import { QuestionCircleOutline } from 'antd-mobile-icons'
+import { useConfig } from '../config-provider'
+import { undefinedFallback } from '../../utils/undefined-fallback'
 
 const NAME_SPLIT = '__SPLIT__'
 
@@ -33,8 +37,12 @@ export type FormItemProps = Pick<
   | 'trigger'
   | 'validateTrigger'
   | 'shouldUpdate'
+  | 'initialValue'
 > &
-  Pick<ListItemProps, 'style' | 'onClick' | 'extra' | 'arrow'> & {
+  Pick<
+    ListItemProps,
+    'style' | 'onClick' | 'extra' | 'clickable' | 'arrow' | 'description'
+  > & {
     label?: React.ReactNode
     help?: React.ReactNode
     hasFeedback?: boolean
@@ -43,7 +51,8 @@ export type FormItemProps = Pick<
     disabled?: boolean
     hidden?: boolean
     layout?: FormLayout
-    children: ChildrenType
+    childElementPosition?: 'normal' | 'right'
+    children?: ChildrenType
   } & NativeProps
 
 interface MemoInputProps {
@@ -70,10 +79,15 @@ type FormItemLayoutProps = Pick<
   | 'hidden'
   | 'layout'
   | 'extra'
+  | 'clickable'
   | 'arrow'
+  | 'description'
+  | 'childElementPosition'
 > & {
   htmlFor?: string
-  errors?: string[]
+  errors: string[]
+  warnings: string[]
+  children: React.ReactNode
 }
 
 const FormItemLayout: React.FC<FormItemLayoutProps> = props => {
@@ -88,28 +102,91 @@ const FormItemLayout: React.FC<FormItemLayoutProps> = props => {
     children,
     htmlFor,
     hidden,
-    errors,
     arrow,
+    childElementPosition = 'normal',
   } = props
 
   const context = useContext(FormContext)
+
+  const { locale } = useConfig()
 
   const hasFeedback =
     props.hasFeedback !== undefined ? props.hasFeedback : context.hasFeedback
   const layout = props.layout || context.layout
 
-  const feedback = hasFeedback && errors && errors.length > 0 ? errors[0] : null
+  const requiredMark = (() => {
+    const { requiredMarkStyle } = context
+    switch (requiredMarkStyle) {
+      case 'asterisk':
+        return (
+          required && (
+            <span className={`${classPrefix}-required-asterisk`}>*</span>
+          )
+        )
+      case 'text-required':
+        return (
+          required && (
+            <span className={`${classPrefix}-required-text`}>
+              ({locale.Form.required})
+            </span>
+          )
+        )
+      case 'text-optional':
+        return (
+          !required && (
+            <span className={`${classPrefix}-required-text`}>
+              ({locale.Form.optional})
+            </span>
+          )
+        )
+      default:
+        return null
+    }
+  })()
 
   const labelElement = label ? (
     <label className={`${classPrefix}-label`} htmlFor={htmlFor}>
       {label}
-      {required && <span className={`${classPrefix}-label-required`}>*</span>}
-      {help && <span className={`${classPrefix}-label-help`}>{help}</span>}
+      {requiredMark}
+      {help && (
+        <Popover content={help} mode='dark' trigger='click'>
+          <span
+            className={`${classPrefix}-label-help`}
+            onClick={e => {
+              e.preventDefault()
+            }}
+          >
+            <QuestionCircleOutline />
+          </span>
+        </Popover>
+      )}
     </label>
   ) : null
 
-  const descriptionElement = feedback && (
-    <div className={`${classPrefix}-footer`}>{feedback}</div>
+  const description = (
+    <>
+      {props.description}
+      {hasFeedback && (
+        <>
+          {props.errors.map((error, index) => (
+            <div
+              key={`error-${index}`}
+              className={`${classPrefix}-feedback-error`}
+            >
+              {error}
+            </div>
+          ))}
+          {props.warnings.map((warning, index) => (
+            <div
+              key={`warning-${index}`}
+              className={`${classPrefix}-feedback-warning`}
+            >
+              {warning}
+            </div>
+          ))}
+        </>
+      )}
+    </>
   )
 
   return (
@@ -118,16 +195,31 @@ const FormItemLayout: React.FC<FormItemLayoutProps> = props => {
       title={layout === 'vertical' && labelElement}
       prefix={layout === 'horizontal' && labelElement}
       extra={extra}
-      description={descriptionElement}
-      className={classNames(classPrefix, className, {
-        [`${classPrefix}-hidden`]: hidden,
-        [`${classPrefix}-error`]: feedback !== null,
-      })}
+      description={description}
+      className={classNames(
+        classPrefix,
+        className,
+        `${classPrefix}-${layout}`,
+        {
+          [`${classPrefix}-hidden`]: hidden,
+          [`${classPrefix}-has-error`]: props.errors.length,
+        }
+      )}
       disabled={disabled}
       onClick={props.onClick}
+      clickable={props.clickable}
       arrow={arrow}
     >
-      {children}
+      <div
+        className={classNames(
+          `${classPrefix}-child`,
+          `${classPrefix}-child-position-${childElementPosition}`
+        )}
+      >
+        <div className={classNames(`${classPrefix}-child-inner`)}>
+          {children}
+        </div>
+      </div>
     </List.Item>
   )
 }
@@ -147,24 +239,31 @@ export const FormItem: FC<FormItemProps> = props => {
     noStyle,
     hidden,
     layout,
+    childElementPosition,
+    description,
     // Field 相关
     disabled,
     rules,
     children,
     messageVariables,
     trigger = 'onChange',
-    validateTrigger,
+    validateTrigger = trigger,
     onClick,
     shouldUpdate,
     dependencies,
+    clickable,
     arrow,
     ...fieldProps
   } = props
 
-  const { validateTrigger: contextValidateTrigger } =
-    React.useContext(FieldContext)
-  const mergedValidateTrigger =
-    validateTrigger !== undefined ? validateTrigger : contextValidateTrigger
+  const { name: formName } = useContext(FormContext)
+  const { validateTrigger: contextValidateTrigger } = useContext(FieldContext)
+
+  const mergedValidateTrigger = undefinedFallback(
+    validateTrigger,
+    contextValidateTrigger,
+    trigger
+  )
 
   const updateRef = React.useRef(0)
   updateRef.current += 1
@@ -207,6 +306,17 @@ export const FormItem: FC<FormItemProps> = props => {
       },
       curErrors
     )
+    const curWarnings = meta?.warnings ?? []
+    const warnings = Object.keys(subMetas).reduce(
+      (subWarnings: string[], key: string) => {
+        const warnings = subMetas[key]?.warnings ?? []
+        if (warnings.length) {
+          subWarnings = [...subWarnings, ...warnings]
+        }
+        return subWarnings
+      },
+      curWarnings
+    )
 
     return (
       <FormItemLayout
@@ -215,14 +325,18 @@ export const FormItem: FC<FormItemProps> = props => {
         label={label}
         extra={extra}
         help={help}
+        description={description}
         required={isRequired}
         disabled={disabled}
         hasFeedback={hasFeedback}
         htmlFor={fieldId}
         errors={errors}
+        warnings={warnings}
         onClick={onClick}
         hidden={hidden}
         layout={layout}
+        childElementPosition={childElementPosition}
+        clickable={clickable}
         arrow={arrow}
       >
         <NoStyleItemContext.Provider value={onSubMetaChange}>
@@ -272,19 +386,15 @@ export const FormItem: FC<FormItemProps> = props => {
         const isRequired =
           required !== undefined
             ? required
-            : !!(
-                rules &&
-                rules.some(rule => {
-                  if (rule && typeof rule === 'object' && rule.required) {
-                    return true
-                  }
-                  return false
-                })
+            : rules &&
+              rules.some(
+                rule => !!(rule && typeof rule === 'object' && rule.required)
               )
 
-        const fieldId = (toArray(name).length && meta ? meta.name : []).join(
-          '_'
-        )
+        const nameList = toArray(name).length && meta ? meta.name : []
+        const fieldId = (
+          nameList.length > 0 && formName ? [formName, ...nameList] : nameList
+        ).join('_')
 
         if (shouldUpdate && dependencies) {
           devWarning(

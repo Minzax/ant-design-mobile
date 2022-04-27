@@ -41,3 +41,13 @@ function loadMore() { // 正确
 ### 配合搜索使用
 
 <code src="./demos/demo3.tsx"></code>
+
+## 常见问题
+
+### 是否支持下拉刷新？
+
+下拉刷新是另一个组件：[PullToRefresh](./pull-to-refresh)。
+
+### 为什么配合 ahooks 的 `useDebounceFn` 或者 `useThrottleFn` 使用时会出现报错？
+
+InfiniteScroll 本身已经包含了防止并发的重复请求的逻辑，所以请不要配合 `useDebounceFn` 或 `useThrottleFn` 使用，它们之间会出现逻辑冲突。

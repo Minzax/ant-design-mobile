@@ -1,9 +1,10 @@
 # Button 按钮
 
 <code src="./demos/demo1.tsx"></code>
-<code src="./demos/demo2.tsx" debug></code>
 
-## 属性
+<code src="./demos/demo2.tsx"></code>
+
+### 属性
 
 | 属性        | 说明                             | 类型                                                               | 默认值      |
 | ----------- | -------------------------------- | ------------------------------------------------------------------ | ----------- |
@@ -18,7 +19,7 @@
 | type        | 原生 `button` 元素的 `type` 属性 | `'submit' \| 'reset' \| 'button'`                                  | `'button'`  |
 | shape       | 按钮的形状                       | `'default' \| 'rounded' \| 'rectangular'`                          | `'default'` |
 
-## CSS 变量
+### CSS 变量
 
 | 属性               | 说明     | 默认值                    | 全局变量                        |
 | ------------------ | -------- | ------------------------- | ------------------------------- |
@@ -28,3 +29,9 @@
 | --border-width     | 边框宽度 | `1px`                     | `--adm-button-border-width`     |
 | --border-style     | 边框样式 | `solid`                   | `--adm-button-border-style`     |
 | --border-color     | 边框颜色 | `var(--adm-border-color)` | `--adm-button-border-color`     |
+
+### Ref
+
+| 属性          | 说明             | 类型                          |
+| ------------- | ---------------- | ----------------------------- |
+| nativeElement | 原始 button 元素 | `HtmlButtonElement` \| `null` |

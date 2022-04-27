@@ -6,10 +6,11 @@ import { mergeProps } from '../../utils/with-default-props'
 import Badge, { BadgeProps } from '../badge'
 import SafeArea from '../safe-area'
 import { usePropsValue } from '../../utils/use-props-value'
+import { traverseReactNode } from '../../utils/traverse-react-node'
 
 export type TabBarItemProps = {
   icon?: ReactNode | ((active: boolean) => ReactNode)
-  title?: ReactNode
+  title?: ReactNode | ((active: boolean) => ReactNode)
   badge?: BadgeProps['content']
 } & NativeProps
 
@@ -22,6 +23,7 @@ export type TabBarProps = {
   defaultActiveKey?: string | null
   onChange?: (key: string) => void
   safeArea?: boolean
+  children?: React.ReactNode
 } & NativeProps
 
 const classPrefix = `adm-tab-bar`
@@ -37,7 +39,7 @@ export const TabBar: FC<TabBarProps> = p => {
 
   const items: ReactElement<ComponentProps<typeof TabBarItem>>[] = []
 
-  React.Children.forEach(props.children, (child, index) => {
+  traverseReactNode(props.children, (child, index) => {
     if (!React.isValidElement(child)) return
     const key = child.key
     if (typeof key !== 'string') return
@@ -72,7 +74,9 @@ export const TabBar: FC<TabBarProps> = p => {
             )
             const titleElement = item.props.title && (
               <div className={`${classPrefix}-item-title`}>
-                {item.props.title}
+                {typeof item.props.title === 'function'
+                  ? item.props.title(active)
+                  : item.props.title}
               </div>
             )
             if (iconElement) {

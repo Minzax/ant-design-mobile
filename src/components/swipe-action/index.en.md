@@ -2,7 +2,7 @@
 
 <code src="./demos/demo1.tsx"></code>
 
-## API
+### Props
 
 | Name                | Description                                                                          | Type                                            | Default |
 | ------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------- | ------- |
@@ -11,6 +11,7 @@
 | onAction            | Triggered when operation button is clicked                                           | `(action: Action, e: React.MouseEvent) => void` | -       |
 | closeOnTouchOutside | Whether to return to the position automatically when other areas is clicked          | `boolean`                                       | `true`  |
 | closeOnAction       | Whether to return to the position automatically when the operation button is clicked | `boolean`                                       | `true`  |
+| stopPropagation     | Stop the propagation of some events.                                                 | `PropagationEvent[]`                            | `[]`    |
 
 ### Action
 
@@ -28,7 +29,7 @@
 | close | Let the slide bar return to the position                                 | `() => void`                         |
 | show  | Slide out the operation button, the `side` parameter defaults to `right` | `(side?: 'left' \| 'right') => void` |
 
-## CSS Variables
+### CSS Variables
 
 | Name         | Description      | Default   |
 | ------------ | ---------------- | --------- |

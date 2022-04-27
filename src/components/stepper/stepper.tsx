@@ -7,20 +7,33 @@ import { mergeProps } from '../../utils/with-default-props'
 import { bound } from '../../utils/bound'
 import Input, { InputProps } from '../input'
 import Button from '../button'
+import Big from 'big.js'
 
 const classPrefix = `adm-stepper`
 
-export type StepperProps = Pick<InputProps, 'onFocus' | 'onBlur'> & {
+type ValueProps = {
+  allowEmpty: true
+  value?: number | null
+  defaultValue?: number | null
+  onChange?: (value: number | null) => void
+}
+
+type ValuePropsWithNull = {
+  allowEmpty?: false
   value?: number
   defaultValue?: number
-  min?: number
-  max?: number
-  step?: number
-  digits?: number
-  disabled?: boolean
-  inputReadOnly?: boolean
   onChange?: (value: number) => void
-} & NativeProps<
+}
+
+export type StepperProps = Pick<InputProps, 'onFocus' | 'onBlur'> &
+  (ValuePropsWithNull | ValueProps) & {
+    min?: number
+    max?: number
+    step?: number
+    digits?: number
+    disabled?: boolean
+    inputReadOnly?: boolean
+  } & NativeProps<
     | '--height'
     | '--input-width'
     | '--input-font-size'
@@ -40,18 +53,21 @@ const defaultProps = {
   defaultValue: 0,
   step: 1,
   disabled: false,
+  allowEmpty: false,
 }
 
 export const Stepper: FC<StepperProps> = p => {
   const props = mergeProps(defaultProps, p)
   const { disabled, step, max, min, inputReadOnly } = props
 
-  const [value, setValue] = usePropsValue(props)
-  const [inputValue, setInputValue] = useState(() => value.toString())
+  const [value, setValue] = usePropsValue<number | null>(props as any)
+  const [inputValue, setInputValue] = useState(() =>
+    convertValueToText(value, props.digits)
+  )
   function setValueWithCheck(v: number) {
     if (isNaN(v)) return
     let target = bound(v, props.min, props.max)
-    if (props.digits || props.digits === 0) {
+    if (props.digits !== undefined) {
       target = parseFloat(target.toFixed(props.digits))
     }
     setValue(target)
@@ -61,43 +77,62 @@ export const Stepper: FC<StepperProps> = p => {
 
   useEffect(() => {
     if (!hasFocus) {
-      setInputValue(value.toString())
+      setInputValue(convertValueToText(value, props.digits))
     }
   }, [hasFocus])
 
   useEffect(() => {
     if (!hasFocus) {
-      setInputValue(value.toString())
+      setInputValue(convertValueToText(value, props.digits))
     }
-  }, [value])
+  }, [value, props.digits])
 
   const handleInputChange = (v: string) => {
     setInputValue(v)
-    setValueWithCheck(parseFloat(v))
+    const value = convertTextToValue(v)
+    if (value === null) {
+      if (props.allowEmpty) {
+        setValue(null)
+      } else {
+        setValue(props.defaultValue)
+      }
+    } else {
+      setValueWithCheck(value)
+    }
   }
 
   const handleMinus = () => {
-    setValueWithCheck(value - step)
+    setValueWithCheck(
+      Big(value ?? 0)
+        .minus(step)
+        .toNumber()
+    )
   }
 
   const handlePlus = () => {
-    setValueWithCheck(value + step)
+    setValueWithCheck(
+      Big(value ?? 0)
+        .add(step)
+        .toNumber()
+    )
   }
 
   const minusDisabled = () => {
-    if (min === undefined) {
-      return disabled
-    } else {
-      return disabled || value <= min
+    if (disabled) return true
+    if (value === null) return false
+    if (min !== undefined) {
+      return value <= min
     }
+    return false
   }
 
   const plusDisabled = () => {
-    if (max === undefined) {
-      return disabled
-    } else {
-      return disabled || value >= max
+    if (disabled) return true
+    if (value === null) return false
+    if (max !== undefined) {
+      return value >= max
     }
+    return false
   }
 
   return withNativeProps(
@@ -148,4 +183,18 @@ export const Stepper: FC<StepperProps> = p => {
       </Button>
     </div>
   )
+}
+
+function convertValueToText(value: number | null, digits?: number) {
+  if (value === null) return ''
+  if (digits !== undefined) {
+    return value.toFixed(digits)
+  } else {
+    return value.toString()
+  }
+}
+
+function convertTextToValue(text: string) {
+  if (text === '') return null
+  return parseFloat(text)
 }

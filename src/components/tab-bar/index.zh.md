@@ -22,6 +22,12 @@
 | 属性  | 说明                                        | 类型                                            | 默认值 |
 | ----- | ------------------------------------------- | ----------------------------------------------- | ------ |
 | key   | 对应 `activeKey`                            | `string`                                        | -      |
-| title | 标题                                        | `ReactNode`                                     | -      |
+| title | 标题                                        | `ReactNode \| ((active: boolean) => ReactNode)` | -      |
 | icon  | 图标                                        | `ReactNode \| ((active: boolean) => ReactNode)` | -      |
 | badge | 徽标，同 [Badge](./badge) 的 `content` 属性 | `React.ReactNode \| typeof Badge.dot`           | -      |
+
+## FAQ
+
+### TabBar 为什么不能固定在页面底部？
+
+不同业务项目中的布局逻辑是不一样的，TabBar 本身是不含定位和外层布局相关的逻辑的，需要业务项目中自己写 CSS 来控制。

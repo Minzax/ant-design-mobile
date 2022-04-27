@@ -1,15 +1,11 @@
-import React, {
-  useState,
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useLayoutEffect,
-} from 'react'
+import React, { useState, forwardRef, useImperativeHandle, useRef } from 'react'
 import { usePropsValue } from '../../utils/use-props-value'
 import { CloseCircleFill } from 'antd-mobile-icons'
 import { NativeProps, withNativeProps } from '../../utils/native-props'
 import { mergeProps } from '../../utils/with-default-props'
 import classNames from 'classnames'
+import { useIsomorphicLayoutEffect } from 'ahooks'
+import { bound } from '../../utils/bound'
 
 const classPrefix = `adm-input`
 
@@ -22,9 +18,8 @@ export type InputProps = Pick<
   NativeInputProps,
   | 'maxLength'
   | 'minLength'
-  | 'max'
-  | 'min'
   | 'autoComplete'
+  | 'autoFocus'
   | 'pattern'
   | 'inputMode'
   | 'type'
@@ -37,6 +32,7 @@ export type InputProps = Pick<
   | 'onClick'
   | 'onCompositionStart'
   | 'onCompositionEnd'
+  | 'onClick'
 > & {
   value?: string
   defaultValue?: string
@@ -56,6 +52,8 @@ export type InputProps = Pick<
     | 'previous'
     | 'search'
     | 'send'
+  min?: number
+  max?: number
 } & NativeProps<
     '--font-size' | '--color' | '--placeholder-color' | '--text-align'
   >
@@ -68,6 +66,7 @@ export type InputRef = {
   clear: () => void
   focus: () => void
   blur: () => void
+  nativeElement: HTMLInputElement | null
 }
 
 export const Input = forwardRef<InputRef, InputProps>((p, ref) => {
@@ -86,6 +85,9 @@ export const Input = forwardRef<InputRef, InputProps>((p, ref) => {
     blur: () => {
       nativeInputRef.current?.blur()
     },
+    get nativeElement() {
+      return nativeInputRef.current
+    },
   }))
 
   const handleKeydown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -95,13 +97,25 @@ export const Input = forwardRef<InputRef, InputProps>((p, ref) => {
     props.onKeyDown?.(e)
   }
 
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (!props.enterKeyHint) return
     nativeInputRef.current?.setAttribute('enterkeyhint', props.enterKeyHint)
     return () => {
       nativeInputRef.current?.removeAttribute('enterkeyhint')
     }
   }, [props.enterKeyHint])
+
+  function checkValue() {
+    let nextValue = value
+    if (props.type === 'number') {
+      nextValue =
+        nextValue &&
+        bound(parseFloat(nextValue), props.min, props.max).toString()
+    }
+    if (nextValue !== value) {
+      setValue(nextValue)
+    }
+  }
 
   return withNativeProps(
     props,
@@ -124,6 +138,7 @@ export const Input = forwardRef<InputRef, InputProps>((p, ref) => {
         }}
         onBlur={e => {
           setHasFocus(false)
+          checkValue()
           props.onBlur?.(e)
         }}
         id={props.id}
@@ -136,6 +151,7 @@ export const Input = forwardRef<InputRef, InputProps>((p, ref) => {
         max={props.max}
         min={props.min}
         autoComplete={props.autoComplete}
+        autoFocus={props.autoFocus}
         pattern={props.pattern}
         inputMode={props.inputMode}
         type={props.type}
@@ -145,8 +161,9 @@ export const Input = forwardRef<InputRef, InputProps>((p, ref) => {
         onKeyUp={props.onKeyUp}
         onCompositionStart={props.onCompositionStart}
         onCompositionEnd={props.onCompositionEnd}
+        onClick={props.onClick}
       />
-      {props.clearable && !!value && (
+      {props.clearable && !!value && !props.readOnly && hasFocus && (
         <div
           className={`${classPrefix}-clear`}
           onMouseDown={e => {

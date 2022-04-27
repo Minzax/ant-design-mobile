@@ -5,7 +5,6 @@ import { useUnmountedRef } from 'ahooks'
 import Mask from '../mask'
 import { Action, DialogActionButton } from './dialog-action-button'
 import Image from '../image'
-import Space from '../space'
 import {
   GetContainer,
   renderToContainer,
@@ -17,8 +16,6 @@ import {
 import AutoCenter from '../auto-center'
 import { useSpring, animated } from '@react-spring/web'
 import { NativeProps, withNativeProps } from '../../utils/native-props'
-
-const classPrefix = `adm-dialog`
 
 export type DialogProps = {
   afterClose?: () => void
@@ -40,6 +37,7 @@ export type DialogProps = {
   maskStyle?: React.CSSProperties
   maskClassName?: string
   stopPropagation?: PropagationEvent[]
+  disableBodyScroll?: boolean
 } & NativeProps
 
 const defaultProps = {
@@ -49,6 +47,7 @@ const defaultProps = {
   closeOnMaskClick: false,
   stopPropagation: ['click'],
   getContainer: null,
+  disableBodyScroll: true,
 }
 
 export const Dialog: FC<DialogProps> = p => {
@@ -59,9 +58,9 @@ export const Dialog: FC<DialogProps> = p => {
     scale: props.visible ? 1 : 0.8,
     opacity: props.visible ? 1 : 0,
     config: {
-      mass: 1,
+      mass: 1.2,
       tension: 200,
-      friction: 30,
+      friction: 25,
       clamp: true,
     },
     onStart: () => {
@@ -80,10 +79,69 @@ export const Dialog: FC<DialogProps> = p => {
 
   const [active, setActive] = useState(props.visible)
 
+  const body = (
+    <div
+      className={classNames(
+        cls('body'),
+        props.image && cls('with-image'),
+        props.bodyClassName
+      )}
+      style={props.bodyStyle}
+    >
+      {!!props.image && (
+        <div className={cls('image-container')}>
+          <Image src={props.image} alt='dialog header image' width='100%' />
+        </div>
+      )}
+      {!!props.header && (
+        <div className={cls('header')}>
+          <AutoCenter>{props.header}</AutoCenter>
+        </div>
+      )}
+      {!!props.title && <div className={cls('title')}>{props.title}</div>}
+      <div
+        className={classNames(
+          cls('content'),
+          !props.content && cls('content-empty')
+        )}
+      >
+        {typeof props.content === 'string' ? (
+          <AutoCenter>{props.content}</AutoCenter>
+        ) : (
+          props.content
+        )}
+      </div>
+      <div className={cls('footer')}>
+        {props.actions.map((row, index) => {
+          const actions = Array.isArray(row) ? row : [row]
+          return (
+            <div className={cls('action-row')} key={index}>
+              {actions.map((action, index) => (
+                <DialogActionButton
+                  key={action.key}
+                  action={action}
+                  onAction={async () => {
+                    await Promise.all([
+                      action.onClick?.(),
+                      props.onAction?.(action, index),
+                    ])
+                    if (props.closeOnAction) {
+                      props.onClose?.()
+                    }
+                  }}
+                />
+              ))}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+
   const node = withNativeProps(
     props,
     <div
-      className={classPrefix}
+      className={cls()}
       style={{
         display: active ? 'unset' : 'none',
       }}
@@ -92,77 +150,16 @@ export const Dialog: FC<DialogProps> = p => {
         visible={props.visible}
         onMaskClick={props.closeOnMaskClick ? props.onClose : undefined}
         style={props.maskStyle}
-        className={classNames(`${classPrefix}-mask`, props.maskClassName)}
+        className={classNames(cls('mask'), props.maskClassName)}
+        disableBodyScroll={props.disableBodyScroll}
       />
       <div
-        className={`${classPrefix}-wrap`}
+        className={cls('wrap')}
         style={{
           pointerEvents: props.visible ? 'unset' : 'none',
         }}
       >
-        <animated.div
-          style={{
-            ...style,
-          }}
-          onClick={e => e.stopPropagation()}
-          className={`${classPrefix}-main`}
-        >
-          {!!props.image && (
-            <div className={`${classPrefix}-image-container`}>
-              <Image src={props.image} alt='dialog header image' width='100%' />
-            </div>
-          )}
-          <div
-            style={props.bodyStyle}
-            className={classNames(`${classPrefix}-body`, props.bodyClassName)}
-          >
-            <Space direction='vertical' block>
-              {!!props.header && (
-                <div className={`${classPrefix}-body-header-wrapper`}>
-                  <div className={`${classPrefix}-body-header`}>
-                    {props.header}
-                  </div>
-                </div>
-              )}
-              {!!props.title && (
-                <div className={`${classPrefix}-body-title`}>{props.title}</div>
-              )}
-              {!!props.content && (
-                <div className={`${classPrefix}-body-content`}>
-                  {typeof props.content === 'string' ? (
-                    <AutoCenter>{props.content}</AutoCenter>
-                  ) : (
-                    props.content
-                  )}
-                </div>
-              )}
-            </Space>
-          </div>
-          <div className={`${classPrefix}-footer`}>
-            {props.actions.map((row, index) => {
-              const actions = Array.isArray(row) ? row : [row]
-              return (
-                <div className={`${classPrefix}-action-row`} key={index}>
-                  {actions.map((action, index) => (
-                    <DialogActionButton
-                      key={action.key}
-                      action={action}
-                      onAction={async () => {
-                        await Promise.all([
-                          action.onClick?.(),
-                          props.onAction?.(action, index),
-                        ])
-                        if (props.closeOnAction) {
-                          props.onClose?.()
-                        }
-                      }}
-                    />
-                  ))}
-                </div>
-              )
-            })}
-          </div>
-        </animated.div>
+        <animated.div style={style}>{body}</animated.div>
       </div>
     </div>
   )
@@ -171,4 +168,8 @@ export const Dialog: FC<DialogProps> = p => {
     props.getContainer,
     withStopPropagation(props.stopPropagation, node)
   )
+}
+
+function cls(name: string = '') {
+  return 'adm-dialog' + (name && '-') + name
 }

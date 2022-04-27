@@ -9,7 +9,7 @@ import {
 } from '../../utils/render-to-container'
 import { mergeProps } from '../../utils/with-default-props'
 import { useConfig } from '../config-provider'
-import { useShouldRender } from '../../utils/use-should-render'
+import { useShouldRender } from '../../utils/should-render'
 import {
   PropagationEvent,
   withStopPropagation,
@@ -35,6 +35,7 @@ export type MaskProps = {
   afterShow?: () => void
   afterClose?: () => void
   stopPropagation?: PropagationEvent[]
+  children?: React.ReactNode
 } & NativeProps<'--z-index'>
 
 const defaultProps = {
@@ -106,6 +107,11 @@ export const Mask: React.FC<MaskProps> = p => {
           opacity,
           ...props.style,
           display: active ? 'unset' : 'none',
+        }}
+        onClick={e => {
+          if (e.target === e.currentTarget) {
+            props.onMaskClick?.(e)
+          }
         }}
       >
         {props.onMaskClick && (

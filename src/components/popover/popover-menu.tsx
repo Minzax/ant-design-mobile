@@ -1,7 +1,5 @@
 import React, {
   forwardRef,
-  ReactElement,
-  Ref,
   useCallback,
   useImperativeHandle,
   useMemo,
@@ -16,19 +14,19 @@ export type Action = {
   text: React.ReactNode
   icon?: React.ReactNode
   disabled?: boolean
-  key?: string
+  key?: string | number
   onClick?: () => void
-  [key: string]: any
 }
 
-export type PopoverMenuProps<T> = Omit<PopoverProps, 'content'> & {
-  actions: T[]
-  onAction?: (text: T) => void
+export type PopoverMenuProps = Omit<PopoverProps, 'content'> & {
+  actions: Action[]
+  onAction?: (item: Action) => void
 }
 
-export const PopoverMenu = forwardRef<PopoverRef, PopoverMenuProps<Action>>(
+export const PopoverMenu = forwardRef<PopoverRef, PopoverMenuProps>(
   (props, ref) => {
     const innerRef = useRef<PopoverRef>(null)
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     useImperativeHandle(ref, () => innerRef.current!, [])
 
     const onClick = useCallback(
@@ -84,6 +82,4 @@ export const PopoverMenu = forwardRef<PopoverRef, PopoverMenuProps<Action>>(
       </Popover>
     )
   }
-) as <T extends Action = Action>(
-  props: PopoverMenuProps<T> & { ref?: Ref<PopoverRef> }
-) => ReactElement
+)

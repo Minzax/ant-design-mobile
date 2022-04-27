@@ -4,7 +4,7 @@
 
 antd-mobile 本身只支持 React 技术栈。
 
-目前我们正在开发对应的支付宝小程序版本，预计最近会作为一个单独的的组件库发布出来。
+对于支付宝小程序，可以使用 [antd-mini](https://mini.ant.design/)。
 
 微信和其他平台的小程序暂时还没有对应的孪生组件库，欢迎社区同学开发。
 
@@ -14,7 +14,7 @@ antd-mobile 本身只支持 React 技术栈。
 
 ### 为什么从 v2 直接跳跃到了 v5？v3 和 v4 跑到哪里去了？
 
-v2 已经是很久之前发布的版本了，最近两年在公司内部，我们开发了 v3 v4 两个版本，但最终并未发布到社区上，此次 v5 版本我们将同步发布到社区。
+v2 已经是很久之前发布的版本了，最近两年在公司内部，我们开发了 v3 v4 两个版本，但最终并未发布到社区上。
 
 ### 我应该现在开始使用 v5 版本吗？
 
@@ -64,3 +64,23 @@ html {
 
 - [300ms tap delay, gone away](https://developers.google.com/web/updates/2013/12/300ms-tap-delay-gone-away)
 - [More Responsive Tapping on iOS](https://webkit.org/blog/5610/more-responsive-tapping-on-ios/)
+
+### 在我的项目中，antd-mobile 的组件手势操作无法生效，该怎么解决？
+
+请检查项目中是不是引入了 fastclick，如果有的话，尝试移除掉再试一下。
+
+### 关于 React Hot Loader
+
+React Hot Loader 对项目有比较大的侵入性， 而 antd-mobile 中的很多组件（例如 Swiper Tabs Form TabBar SideBar Dropdown Space Steps）并不能和它兼容，而且 React Hot Loader 本身也在 README 中写了推荐大家不要再使用，所以请考虑移除 React Hot Loader 或将其替换为 [React Fast Refresh](https://github.com/facebook/react/issues/16604)。
+
+### 如何在 codesandbox 上写一个复现 demo
+
+codesandbox 是一个浏览器端的沙盒运行环境，支持多种流行的构建模板，可以用于快速原型开发、DEMO 展示、Bug 还原等等。
+
+1. 创建一个 codesandbox
+
+   访问 https://codesandbox.io/s/antd-mobile-snrxr 创建一个 codesandbox 的在线示例
+
+2. 为了保证准确复现，请保证你出现 bug 的版本与 codesandbox 依赖中的 antd-mobile 版本一致。
+
+3. 完成代码复现后，别忘了`保存`以创建一个新的实例，然后点击右上角出现的 share 按钮，复制 url 到 issues 中。

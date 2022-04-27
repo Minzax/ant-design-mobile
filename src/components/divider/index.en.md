@@ -2,8 +2,9 @@
 
 <code src="./demos/demo1.tsx"></code>
 
-# API
+### Props
 
-| Name            | Description                 | Type                            | Default    |
-| --------------- | --------------------------- | ------------------------------- | ---------- |
-| contentPosition | The position of the content | `'center' \| 'left' \| 'right'` | `'center'` |
+| Name            | Description                                                                     | Type                            | Default        |
+| --------------- | ------------------------------------------------------------------------------- | ------------------------------- | -------------- |
+| contentPosition | The position of the content. Only take effect when `direction` is `horizontal`. | `'center' \| 'left' \| 'right'` | `'center'`     |
+| direction       | The direction type of divider                                                   | `'horizontal' \| 'vertical'`    | `'horizontal'` |

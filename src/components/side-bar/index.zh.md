@@ -6,7 +6,9 @@
 
 <code src="./demos/demo3.tsx"></code>
 
-## API
+<code src="./demos/demo4.tsx"></code>
+
+### 属性
 
 ### SideBar
 
@@ -25,7 +27,7 @@
 | disabled | 是否禁用         | `boolean`   | `false` |
 | badge    | 徽标             | `ReactNode` | -       |
 
-## CSS 变量
+### CSS 变量
 
 | 属性                 | 说明                 | 默认值    |
 | -------------------- | -------------------- | --------- |

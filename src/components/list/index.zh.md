@@ -6,6 +6,10 @@
 
 <code src="./demos/demo3.tsx"></code>
 
+<code src="./demos/demo4.tsx"></code>
+
+<code src="./demos/demo5.tsx"></code>
+
 ## List
 
 ### 属性
@@ -19,7 +23,7 @@
 
 | 属性                      | 说明                                                                                | 默认值                              |
 | ------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------- |
-| --header-font-size        | 头部的字体大小                                                                      | `14px`                              |
+| --header-font-size        | 头部的字体大小                                                                      | `15px`                              |
 | --prefix-width            | prefix 部分的宽度                                                                   | `auto`                              |
 | --prefix-padding-right    | prefix 部分的右侧 padding                                                           | `12px`                              |
 | --active-background-color | 点击时的背景颜色                                                                    | `var(--adm-border-color)`           |
@@ -42,7 +46,7 @@
 | description | 列表项中间下部的描述区域                                        | `ReactNode`                     | -                                                          |
 | prefix      | 列表项左侧区域                                                  | `ReactNode`                     | -                                                          |
 | extra       | 列表项右侧区域                                                  | `ReactNode`                     | -                                                          |
-| clickable   | 是否可以点击                                                    | `boolean`                       | 当 `onClick` 属性存在时，默认为 `true`，否则默认为 `false` |
+| clickable   | 是否显示点击效果                                                | `boolean`                       | 当 `onClick` 属性存在时，默认为 `true`，否则默认为 `false` |
 | arrow       | 右侧是否显示箭头图标，也支持传入 `ReactNode` 来自定义图标       | `boolean \| ReactNode`          | 默认和 `clickable` 的值保持一致                            |
 | disabled    | 是否禁用                                                        | `boolean`                       | `false`                                                    |
 | onClick     | 列表项的点击事件，当设置了 `onClick` 属性时，列表项会有点击效果 | `(e: React.MouseEvent) => void` | -                                                          |
@@ -50,3 +54,13 @@
 ### CSS 变量
 
 支持 List 中的 `--prefix-width`、`--active-background-color`、`--align-items`
+
+## FAQ
+
+### 列表能否支持虚拟滚动？
+
+List 本身不会支持虚拟滚动，可以结合 [react-virtualized](https://github.com/bvaughn/react-virtualized) 实现。
+
+### 列表能否支持拖拽排序？
+
+List 本身不会支持拖拽排序，可以结合 [react-beautiful-dnd](https://github.com/atlassian/react-beautiful-dnd) 实现。

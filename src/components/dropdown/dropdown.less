@@ -6,11 +6,12 @@
 
   .@{class-prefix-dropdown}-nav {
     display: flex;
+    border-bottom: 1px solid transparent;
   }
 
   &-open {
     .@{class-prefix-dropdown}-nav {
-      border-bottom: 1px solid var(--adm-border-color);
+      border-bottom-color: var(--adm-border-color);
     }
   }
 
@@ -53,7 +54,6 @@
     }
 
     &-active {
-      color: var(--adm-color-primary);
       .@{class-prefix-dropdown-item}-title:after {
         margin-top: -1px;
         transform: rotate(135deg);

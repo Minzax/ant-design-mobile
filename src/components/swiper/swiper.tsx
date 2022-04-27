@@ -4,7 +4,6 @@ import React, {
   ReactNode,
   useEffect,
   useImperativeHandle,
-  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -20,7 +19,7 @@ import PageIndicator, { PageIndicatorProps } from '../page-indicator'
 import { staged } from 'staged-components'
 import { useRefState } from '../../utils/use-ref-state'
 import { bound } from '../../utils/bound'
-import { useUpdateEffect } from 'ahooks'
+import { useIsomorphicLayoutEffect, useUpdateEffect } from 'ahooks'
 
 export type SwiperRef = {
   swipeTo: (index: number) => void
@@ -130,6 +129,7 @@ export const Swiper = forwardRef(
           config: { tension: 200, friction: 30 },
           onRest: () => {
             if (draggingRef.current) return
+            if (!loop) return
             const rawX = position.get()
             const totalWidth = 100 * count
             const standardPosition = modulus(rawX, totalWidth)
@@ -228,7 +228,7 @@ export const Swiper = forwardRef(
         swipePrev,
       }))
 
-      useLayoutEffect(() => {
+      useIsomorphicLayoutEffect(() => {
         const maxIndex = validChildren.length - 1
         if (current > maxIndex) {
           swipeTo(maxIndex, true)
@@ -283,7 +283,7 @@ export const Swiper = forwardRef(
                 ),
               }}
             >
-              {React.Children.map(validChildren, (child, index) => {
+              {React.Children.map(validChildren, child => {
                 return <div className='adm-swiper-slide'>{child}</div>
               })}
             </animated.div>

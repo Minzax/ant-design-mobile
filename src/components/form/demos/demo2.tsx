@@ -17,7 +17,7 @@ export default () => {
   const onSubmit = () => {
     const values = form.getFieldsValue()
     Dialog.alert({
-      content: JSON.stringify(values),
+      content: <pre>{JSON.stringify(values, null, 2)}</pre>,
     })
   }
 
@@ -61,12 +61,10 @@ export default () => {
           }}
         </Form.Item>
         <DatePickerInputItem />
-        <Form.Item name='c' label='字段C' noStyle>
-          <Input placeholder='自定义样式' />
-        </Form.Item>
       </Form>
 
       <RefDemo />
+      <WarningOnlyDemo />
     </>
   )
 }
@@ -142,7 +140,7 @@ const DatePickerInputItem = () => {
                 }}
                 onClick={e => {
                   e.stopPropagation()
-                  setFieldsValue({ birthday: '' })
+                  setFieldsValue({ birthday: null })
                 }}
               />
             ) : (
@@ -166,5 +164,35 @@ const DatePickerInputItem = () => {
         </Form.Item>
       )}
     </Form.Item>
+  )
+}
+
+const WarningOnlyDemo = () => {
+  const onFinish = (values: any) => {
+    console.log(values)
+  }
+
+  return (
+    <Form
+      onFinish={onFinish}
+      footer={
+        <Button block type='submit' color='primary' size='large'>
+          提交
+        </Button>
+      }
+    >
+      <Form.Header>非阻塞校验</Form.Header>
+      <Form.Item
+        name='email'
+        label='邮箱'
+        rules={[
+          { required: true },
+          { type: 'string', min: 6 },
+          { type: 'email', warningOnly: true },
+        ]}
+      >
+        <Input placeholder='请输入邮箱' />
+      </Form.Item>
+    </Form>
   )
 }
